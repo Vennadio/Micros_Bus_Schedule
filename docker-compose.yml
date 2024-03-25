@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  schedule-service:
+    build: ./schedule_service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  routes-service:
+    build: ./routes_service
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
