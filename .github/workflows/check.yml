@@ -47,7 +47,3 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Deploy to Production
-        run: |
-          # Добавьте здесь команды для развертывания вашего сервиса
