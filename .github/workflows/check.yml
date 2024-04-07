@@ -18,6 +18,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r bus_stops_service/requirements.txt
         pip install pytest
+        pip install httpx
 
     - name: Test
       run: |
