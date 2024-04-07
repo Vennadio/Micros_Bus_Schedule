@@ -1,20 +1,33 @@
-from fastapi import FastAPI
-import asyncpg
-import asyncio
+from fastapi import FastAPI, HTTPException
+import requests
 
 app = FastAPI()
 
-async def get_schedule_from_db(route_id: int):
-    conn = await asyncpg.connect(user="myuser", password="mypassword",
-                                 database="mydatabase", host="db")
-    try:
-        query = "SELECT * FROM bus_schedule WHERE route_id = $1"
-        rows = await conn.fetch(query, route_id)
-        return [dict(row) for row in rows]
-    finally:
-        await conn.close()
+# URL первого сервиса, откуда будем брать данные об остановках
+FIRST_SERVICE_URL = "http://stops-service:8000/stops/"
 
-@app.get("/route/{route_id}/schedule")
-async def get_schedule(route_id: int):
-    schedule = await get_schedule_from_db(route_id)
-    return {"route_id": route_id, "schedule": schedule}
+@app.get("/processed_stops/")
+def process_stops():
+    try:
+        # Получаем данные об остановках из первого сервиса
+        response = requests.get(FIRST_SERVICE_URL)
+        response.raise_for_status()  # Проверяем успешность запроса
+
+        stops_data = response.json()
+
+        # Обработка данных
+        processed_stops = []
+
+        for stop in stops_data:
+            # Например, преобразование названия остановки в верхний регистр
+            processed_stop = {
+                "name": stop["name"].upper(),
+                "location": stop["location"]
+            }
+            processed_stops.append(processed_stop)
+
+        return processed_stops
+
+    except requests.RequestException as e:
+        # В случае ошибки при запросе к первому сервису
+        raise HTTPException(status_code=500, detail=f"Error while fetching stops data: {str(e)}")

@@ -2,19 +2,19 @@ version: '3.8'
 
 services:
   db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
-    ports:
-      - "5432:5432"
+    image: postgres:latest
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbname
 
-  schedule-service:
-    build: ./schedule_service
+  stops-service:
+    build: ./bus_stops_service
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./bus_stops_service:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -22,7 +22,12 @@ services:
 
   routes-service:
     build: ./routes_service
+    command: uvicorn routes_service:app --host 0.0.0.0 --port 8001
+    volumes:
+      - ./routes_service:/app
     ports:
-      - "8001:8000"
-    depends_on:
-      - db
+      - "8001:8001"
+
+
+volumes:
+  postgres_data:
