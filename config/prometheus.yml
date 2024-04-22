@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s # Как часто собирать метрики
+
+scrape_configs:
+  - job_name: 'stops-service'
+    static_configs:
+      - targets: ['stops-service:8000'] # Адрес и порт вашего сервиса остановок
+
+  - job_name: 'routes-service'
+    static_configs:
+      - targets: ['routes-service:8001'] # Адрес и порт вашего сервиса маршрутов

@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from prometheus_client import generate_latest, CollectorRegistry, CONTENT_TYPE_LATEST, multiprocess
 
 SQLALCHEMY_DATABASE_URL = "postgresql://user:password@db/dbname"
 
@@ -23,6 +24,7 @@ class Stop(Base):
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
 
 def get_db():
     db = SessionLocal()
@@ -47,3 +49,10 @@ def create_stop(stop: StopCreate, db: Session = Depends(get_db)):
 def read_stops(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     stops = db.query(Stop).offset(skip).limit(limit).all()
     return stops
+
+@app.route('/metrics')
+def metrics():
+    registry = CollectorRegistry()
+    multiprocess.MultiProcessCollector(registry)
+    data = generate_latest(registry)
+    return Response(data, content_type=CONTENT_TYPE_LATEST)
