@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="margin-left: auto;margin-right: auto;">
+        <h1>Необходима авторизация</h1>
+        <h3 style="visibility:{{ wrong_datg_visability }}">Неверный логин или пароль</h3>
+        <h3 style="visibility:{{ no_permission_visability }}">Доступ запрещен</h3>
+        <form method="post">
+            <label for="name">Login:</label><br>
+            <input type="text" id="name" name="name"><br>
+            <label for="password">Password:</label><br>
+            <input type="text" id="password" name="password">
+            <input type="submit" value="Submit" id="script">
+        </form>
+    </div>
+    <script>btn = document.getElementById('gen_btn')</script>
+</body>
+
+</html>

@@ -5,7 +5,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from prometheus_client import generate_latest, CollectorRegistry, CONTENT_TYPE_LATEST, multiprocess
-
+from keycloak import KeycloakOpenID
+import os
 SQLALCHEMY_DATABASE_URL = "postgresql://user:password@db/dbname"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -25,6 +26,12 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# keycloak_openid = KeycloakOpenID(
+#     server_url=os.getenv("KEYCLOAK_URL", "http://keycloakapp:8080/"),
+#     client_id="kirill_client",
+#     realm_name="master",
+#     client_secret_key="4jsWHrDZgoEA7JgZzrnjb7DLM6WocYn4",
+# )
 
 def get_db():
     db = SessionLocal()
